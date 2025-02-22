@@ -16,11 +16,18 @@ EXPOSE 8000
 ARG DEV=false
 RUN python -m venv /py && \
 	/py/bin/pip install --upgrade pip && \
+	# Install Postgresql required
+	apk add --update --no-cache postgresql-client && \
+	# Install Postgresql excess packages (but will be removed in the next commands)
+	apk add --update --no-cache --virtual .tmp-build-deps \
+		build-base postgresql-dev musl-dev && \
 	/py/bin/pip install -r /tmp/requirements.txt && \
 	if [ $DEV = "true" ]; \
 		then /py/bin/pip install -r /tmp/requirements.dev.txt; \
 	fi && \
+	# Remove temp packages and folders
 	rm -rf /tmp && \
+	apk del .tmp-build-deps && \
 	adduser \
 		--disabled-password \
 		--no-create-home \
