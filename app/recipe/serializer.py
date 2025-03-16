@@ -31,14 +31,16 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     """Serializer for recipes."""
     # All nested Serializers are ready only.
-    # We need to customize/override the 'create', 'update' method so that we can create 
+    # We need to customize/override the 'create', 'update'
+    # method so that we can create
     # tags together with creation of Recipe.
     tags = TagSerializer(many=True, required=False)
     ingredients = IngredientSerializer(many=True, required=False)
 
     class Meta:
         model = Recipe
-        fields = ['id', 'title', 'time_minutes', 'price', 'link', 'description', 'tags', 'ingredients']
+        fields = ['id', 'title', 'time_minutes', 'price',
+                  'link', 'description', 'tags', 'ingredients']
         read_only_fields = ['id']
 
     def _get_or_create_tags(self, tags, recipe):
@@ -62,14 +64,15 @@ class RecipeSerializer(serializers.ModelSerializer):
             recipe.ingredients.add(ingredient_obj)
 
     def create(self, validated_data):
-        """Create custom logic for Recipe to add a feature to allow creation of Tags when adding a Tag."""
+        """
+        Create custom logic for Recipe to add a
+        feature to allow creation of Tags when adding a Tag."""
         tags = validated_data.pop('tags', [])
         ingredients = validated_data.pop('ingredients', [])
         recipe = Recipe.objects.create(**validated_data)
         self._get_or_create_tags(tags, recipe)
         self._get_or_create_ingredients(ingredients, recipe)
         return recipe
-
 
     def update(self, instance, validated_data):
         """Update recipe."""
@@ -102,7 +105,5 @@ class RecipeImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
         read_only_fields = ['id']
         extra_kwargs = {
-                'image': {
-                'required': 'True'
-            }
+                'image': {'required': 'True'}
         }

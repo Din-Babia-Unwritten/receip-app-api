@@ -43,9 +43,10 @@ class PublicIngredientsAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+
 class PrivateIngredientsAPITests(TestCase):
     """Test authenticated API requests."""
-    
+
     def setUp(self):
         self.user = create_user()
         self.client = APIClient()
@@ -141,4 +142,3 @@ class PrivateIngredientsAPITests(TestCase):
         res = self.client.get(INGREDIENTS_URL, {'assigned_only': 1})
 
         self.assertEqual(len(res.data), 1)
-
